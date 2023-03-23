@@ -2,7 +2,7 @@
 
 namespace Mango.Services.ProductAPI.Repository
 {
-    public interface IProductReposutory
+    public interface IProductRepository
     {
         Task<IEnumerable<ProductDto>> GetProductsAsync();
         Task<ProductDto> GetProductByIdAsync(int productId);

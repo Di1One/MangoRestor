@@ -89,6 +89,7 @@ namespace Mango.Services.ProductAPI
 
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
 

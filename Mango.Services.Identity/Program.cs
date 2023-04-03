@@ -1,3 +1,4 @@
+using Duende.IdentityServer.Services;
 using Mango.Services.Identity.DbContexts;
 using Mango.Services.Identity.Initializer;
 using Mango.Services.Identity.Models;
@@ -32,6 +33,7 @@ namespace Mango.Services.Identity
             .AddDeveloperSigningCredential();
 
             builder.Services.AddScoped<IDbInitializer, DbInitializer>();
+            builder.Services.AddScoped<IProfileService, IProfileService>();
 
             builder.Services.AddControllersWithViews();
             var app = builder.Build();

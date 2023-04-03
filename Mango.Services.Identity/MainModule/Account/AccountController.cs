@@ -314,13 +314,15 @@ namespace IdentityServerHost.Quickstart.UI
         private async Task<RegisterViewModel> BuildRegisterViewModelAsync(string returnUrl)
         {
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
-            List<string> roles = new List<string>();
-            roles.Add("Admin");
-            roles.Add("Customer");
+            List<string> roles = new()
+            {
+                "Admin",
+                "Customer"
+            };
             ViewBag.message = roles;
             if (context?.IdP != null && await _schemeProvider.GetSchemeAsync(context.IdP) != null)
             {
-                var local = context.IdP == Duende.IdentityServer.IdentityServerConstants.LocalIdentityProvider;
+                var local = context.IdP == IdentityServerConstants.LocalIdentityProvider;
 
                 // this is meant to short circuit the UI and only trigger the one external IdP
                 var vm = new RegisterViewModel

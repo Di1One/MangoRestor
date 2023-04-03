@@ -15,6 +15,26 @@ namespace Mango.Web
             builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddControllersWithViews();
 
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = "Cookies";
+                options.DefaultChallengeScheme = "oidc";
+            })
+                .AddCookie("Cookies", c=>c.ExpireTimeSpan = TimeSpan.FromMinutes(10))
+                .AddOpenIdConnect("oidc", opt =>
+                {
+                    opt.Authority = builder.Configuration["ServiceUrl:IdentityAPI"];
+                    opt.GetClaimsFromUserInfoEndpoint = true;
+                    opt.ClientId = "mango";
+                    opt.ClientSecret = "secret";
+                    opt.ResponseType = "code";
+
+                    opt.TokenValidationParameters.NameClaimType = "name";
+                    opt.TokenValidationParameters.RoleClaimType = "role";
+                    opt.Scope.Add("mango");
+                    opt.SaveTokens = true;
+                });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -30,6 +50,7 @@ namespace Mango.Web
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(

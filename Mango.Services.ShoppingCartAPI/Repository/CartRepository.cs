@@ -19,7 +19,19 @@ namespace Mango.Services.ShoppingCartAPI.Repository
 
         public async Task<bool> ClearCartAsync(string userId)
         {
-            throw new NotImplementedException();
+            var cartHeaderFromDb = await _db.CartHeaders.FirstOrDefaultAsync(u => u.UserId == userId);
+
+            if (cartHeaderFromDb != null)
+            {
+                _db.CartDetails
+                    .RemoveRange(_db.CartDetails.Where(u => u.CartHeaderId == cartHeaderFromDb.CartHeaderId));
+                _db.CartHeaders.Remove(cartHeaderFromDb);
+                await _db.SaveChangesAsync();
+
+                return true;
+            }
+
+            return false;
         }
 
         public async Task<CartDto> CreateUpdateCartAsync(CartDto cartDto)
@@ -77,12 +89,46 @@ namespace Mango.Services.ShoppingCartAPI.Repository
 
         public async Task<CartDto> GetCartByUserIdAsync(string userId)
         {
-            throw new NotImplementedException();
+            Cart cart = new()
+            { 
+                CartHeader =  await _db.CartHeaders.FirstOrDefaultAsync(u => u.UserId == userId)
+            };
+
+            cart.CartDetails = _db.CartDetails
+                .Where(u => u.CartHeaderId == cart.CartHeader.CartHeaderId)
+                .Include(u => u.Product);
+
+            return _mapper.Map<CartDto>(cart);
         }
 
         public async Task<bool> RemoveFromCartAsync(int cartDetaitlsId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                CartDetails cartDetails = await _db.CartDetails
+                    .FirstOrDefaultAsync(u => u.CartDetailsId == cartDetaitlsId);
+
+                int totalCountOfCartItems = _db.CartDetails
+                    .Where(u => u.CartHeaderId == cartDetails.CartHeaderId)
+                    .Count();
+
+                _db.CartDetails.Remove(cartDetails);
+
+                if (totalCountOfCartItems == 1)
+                {
+                    var cartHeaderToRemove = await _db.CartHeaders
+                        .FirstOrDefaultAsync(u => u.CartHeaderId == cartDetails.CartHeaderId);
+
+                    _db.CartHeaders.Remove(cartHeaderToRemove);
+                }
+
+                await _db.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
         }
     }
 }

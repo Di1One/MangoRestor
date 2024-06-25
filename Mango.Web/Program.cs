@@ -11,6 +11,7 @@ namespace Mango.Web
 
             builder.Services.AddHttpClient<IProductService, ProductService>();
             SD.ProductAPIBase = builder.Configuration["ServiceUrl:ProductAPI"];
+            SD.ShoppingCartAPIBase = builder.Configuration["ServiceUrl:ShoppingCartAPI"];
 
             builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddControllersWithViews();

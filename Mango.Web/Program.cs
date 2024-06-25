@@ -10,9 +10,12 @@ namespace Mango.Web
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddHttpClient<IProductService, ProductService>();
+            builder.Services.AddHttpClient<ICartService, CartService>();
             SD.ProductAPIBase = builder.Configuration["ServiceUrl:ProductAPI"];
+            SD.ShoppingCartAPIBase = builder.Configuration["ServiceUrl:ShoppingCartAPI"];
 
             builder.Services.AddScoped<IProductService, ProductService>();
+            builder.Services.AddScoped<ICartService, CartService>();
             builder.Services.AddControllersWithViews();
 
             builder.Services.AddAuthentication(options =>
